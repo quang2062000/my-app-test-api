@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,8 +20,8 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  addUser(name: string, email:string): Promise<User> {
-    const newUser = this.usersRepository.create({name,email})
+  addUser(createUser : CreateUserDto): Promise<User> {
+    const newUser = this.usersRepository.create({name:createUser.name,email:createUser.email})
     return this.usersRepository.save(newUser)
   }
 
@@ -27,8 +29,8 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 
-  async update(id: number, name: string,email:string): Promise<User> {
-    const newUser = await this.usersRepository.update(id,{name,email})
+  async update(id: number,updateUser: UpdateUserDto): Promise<User> {
+    const newUser = await this.usersRepository.update(id,{name: updateUser.name,email:updateUser.email})
     if (!newUser) {
       throw new NotFoundException(`Item with id ${id} not found`);
     }
